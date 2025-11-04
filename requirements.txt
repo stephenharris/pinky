@@ -1,0 +1,10 @@
+inky==2.2.1
+pillow==11.0.0
+font-fredoka-one
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+google-api-python-client
+imgkit
+jinja2
+python-dateutil
