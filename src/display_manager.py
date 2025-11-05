@@ -3,7 +3,7 @@ from enum import Enum
 from PIL import Image
 
 from views.agenda_view import AgendaView
-from views.photo_view import PhotoView
+from views.google_photo_view import GooglePhotoView
 from views.hello_world_view import HelloWorldView
 
 class DisplayMode(Enum):

@@ -1,0 +1,14 @@
+{
+    "tmp_dir": "/tmp/pinky",
+    "display": "agenda",
+    "calendar": {
+        "google_calendar_id": "..."
+    },
+    "photos": {
+        "dir": "/tmp/pinky/photos",
+        "drive_folder_id": "...",
+        "display_interval": 900,
+        "sync_interval": 3600
+    }
+    
+}
