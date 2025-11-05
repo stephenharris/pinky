@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
@@ -11,10 +12,20 @@ class AgendaView:
         self.display = display
         self.current_photo = 0
         self.config = config
+        self._running = True
 
-    def render(self):
+    async def render(self):
+        self._running = True
+        try:
+            while self._running:
+                self._render_agenda()
+                await asyncio.sleep(3600)
+        except asyncio.CancelledError:
+            print("[Display] Render loop cancelled")
+            self.stop()
 
-        # --- Load events ---
+    def _render_agenda(self):
+                # --- Load events ---
         #with open("events.json") as f:
         #    events = json.load(f)
         events = fetch_events(self.config.get('calendar', 'google_calendar_id'))
@@ -48,7 +59,9 @@ class AgendaView:
         # Display
         img = Image.open(Path(self.config.get('tmp_dir')) / "agenda.png")
         self.display.render(img)
-       
+
+    def stop(self):
+        self._running = False
 
     # Sort timed events by start time if available
     def _parse_time(self, t):

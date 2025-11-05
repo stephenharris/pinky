@@ -1,3 +1,4 @@
+import asyncio
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
@@ -5,8 +6,9 @@ class PhotoView:
     def __init__(self, display, config):
         self.display = display
         self.current_photo = 0
+        self._running = True
 
-    def render(self):
+    async def render(self):
 
         print(__file__)
         print((Path(__file__).parents[2]))
@@ -17,3 +19,11 @@ class PhotoView:
         resizedimage = image.resize((800, 480))        
         self.display.render(resizedimage)
 
+        try:
+            while self._running:
+                await asyncio.sleep(3600)  # keep alive until cancelled
+        except asyncio.CancelledError:
+            print("HelloWorldView render cancelled")
+
+    def stop(self):
+        self._running = False
