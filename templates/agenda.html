@@ -41,19 +41,19 @@
 
   .time {
     width: 180px;
-    font-size: 20px;
+    font-size: 24px;
     color: #555;
   }
 
   .dot {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     margin-right: 16px;
   }
 
   .title {
-    font-size: 20px;
+    font-size: 24px;
   }
 
   .all-day {
@@ -66,7 +66,7 @@
   <header>{{ date }}</header>
 
 <section>
-  {% for e in events[:7] %}
+  {% for e in events[:6] %}
     <div class="event">
       <div class="time {% if e.all_day %}all-day{% endif %}">
         {% if e.all_day and loop.first %}
@@ -80,11 +80,11 @@
     </div>
   {% endfor %}
 
-  {% if events|length > 8 %}
+  {% if events|length > 7 %}
     <div class="event more">
-      +{{ events|length - 7 }} more events
+      +{{ events|length - 6 }} more events
     </div>
-  {% elif events|length == 8 %}
+  {% elif events|length == 7 %}
     <div class="event more">
       +1 more event
     </div>
