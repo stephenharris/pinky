@@ -3,8 +3,8 @@ from display_manager import DisplayManager
 from util.config import Config
 
 def main():
-    display = Mock()
     config = Config()
+    display = Mock(config)
 
     manager = DisplayManager(display, config)
 

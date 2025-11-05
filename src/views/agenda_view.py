@@ -1,4 +1,5 @@
 from datetime import datetime
+from pathlib import Path
 from PIL import Image
 import imgkit
 from datetime import datetime
@@ -40,12 +41,12 @@ class AgendaView:
         # --- Render HTML to PNG ---
         imgkit.from_file(
             "agenda_rendered.html",
-            self.config.get('tmp_dir') / "agenda.png",
+            Path(self.config.get('tmp_dir')) / "agenda.png",
             options={"width": 800, "height": 480}
         )
 
         # Display
-        img = Image.open(self.config.get('tmp_dir') / "agenda.png")
+        img = Image.open(Path(self.config.get('tmp_dir')) / "agenda.png")
         self.display.render(img)
        
 
