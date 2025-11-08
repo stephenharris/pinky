@@ -3,8 +3,7 @@ from inky.auto import auto       # library from Pimoroni for Inky
 class Inky:
     def __init__(self):
         # initialize the Inky display
-        #self.inky_display = auto()   # automatically picks the connected Inky board. :contentReference[oaicite:3]{index=3}
-        self.inky_display = auto(ask_user=True, verbose=True)
+        self.inky_display = auto()   # automatically picks the connected Inky board. :contentReference[oaicite:3]{index=3}
         self.WIDTH = self.inky_display.width
         self.HEIGHT = self.inky_display.height
         self.WHITE = self.inky_display.WHITE
