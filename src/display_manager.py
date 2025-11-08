@@ -14,7 +14,7 @@ class DisplayMode(Enum):
 class DisplayManager:
     def __init__(self, display, config):
         self.display = display
-        self.current_view = DisplayMode(config.get("display", "helloworld"))
+        self.current_view = DisplayMode(config.get("display"))
         self.views = {
             DisplayMode.HELLO_WORLD: HelloWorldView(self.display, config),
             DisplayMode.PHOTOS: GooglePhotoView(self.display, config),
