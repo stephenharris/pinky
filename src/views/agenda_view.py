@@ -58,6 +58,7 @@ class AgendaView:
 
         # Display
         img = Image.open(Path(self.config.get('tmp_dir')) / "agenda.png")
+        img = img.resize((800, 480))
         self.display.render(img)
 
     def stop(self):
