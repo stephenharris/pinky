@@ -24,6 +24,7 @@ class DisplayManager:
         self._task = None
         self._running = False
         self.buttons = ButtonManager(self.handle_button)
+        self._is_rendering = asyncio.Lock()
 
     async def start(self):
         self._running = True
@@ -56,8 +57,12 @@ class DisplayManager:
                 pass
 
         self.current_view = DisplayMode(view)
+        self._task = asyncio.create_task(self.render_wrapper())
+
+    async def render_wrapper(self):
         print(f"[DisplayManager] Starting {self.current_view.value}")
-        self._task = asyncio.create_task(self.views[self.current_view].render())
+        async with self._is_rendering:
+            await self.views[self.current_view].render()
 
     async def stop(self):
         print("[DisplayManager] Stopping...")
