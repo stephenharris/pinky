@@ -15,19 +15,14 @@ class LEDManager:
 
         # Setup for the LED pin
         self.led = chip.line_offset_from_id(LED_PIN)
-        gpio = chip.request_lines(consumer="inky", config={self.led: gpiod.LineSettings(direction=Direction.OUTPUT, bias=Bias.DISABLED)})
+        self.gpio = chip.request_lines(consumer="inky", config={self.led: gpiod.LineSettings(direction=Direction.OUTPUT, bias=Bias.DISABLED)})
 
 
     async def blink_led(self, duration=60, interval=0.5):
         """Blink LED asynchronously for <duration> seconds."""
         end_time = asyncio.get_event_loop().time() + duration
         while asyncio.get_event_loop().time() < end_time:
-            gpio.set_value(self.led, Value.ACTIVE)
+            self.gpio.set_value(self.led, Value.ACTIVE)
             await asyncio.sleep(interval)
-            gpio.set_value(self.led, Value.INACTIVE)
+            self.gpio.set_value(self.led, Value.INACTIVE)
             await asyncio.sleep(interval)
-
-
-            GPIO.output(self.LED_PIN, True)
-            GPIO.output(self.LED_PIN, False)
-            
