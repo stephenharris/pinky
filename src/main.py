@@ -11,7 +11,8 @@ async def main():
     manager = DisplayManager(display, config)
     led = LEDManager()
     
-    await led.blink_led()
+    asyncio.create_task(led.blink_led())
+    
     await manager.start();
     
     while True:
