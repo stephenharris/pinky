@@ -15,7 +15,7 @@ class LEDManager:
 
         # Setup for the LED pin
         self.led = chip.line_offset_from_id(LED_PIN)
-        gpio = chip.request_lines(consumer="inky", config={led: gpiod.LineSettings(direction=Direction.OUTPUT, bias=Bias.DISABLED)})
+        gpio = chip.request_lines(consumer="inky", config={self.led: gpiod.LineSettings(direction=Direction.OUTPUT, bias=Bias.DISABLED)})
 
 
     async def blink_led(self, duration=60, interval=0.5):
