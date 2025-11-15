@@ -5,6 +5,7 @@ import random
 from PIL import Image, ImageOps
 
 from googleclient.drive import sync_with_drive_loop
+from concurrent.futures import ThreadPoolExecutor
 
 class GooglePhotoView:
     def __init__(self, display, config):
@@ -16,6 +17,7 @@ class GooglePhotoView:
         self.sync_interval = config.get('photos', 'sync_interval')
         self.google_drive_id = config.get('photos', 'drive_folder_id');
         self._running = False
+        self.executor = ThreadPoolExecutor(max_workers=2)
 
     def maybe_refill_image_queue(self):
         """Shuffle all available images and refill the queue."""
@@ -50,14 +52,20 @@ class GooglePhotoView:
         self._running = True
         try:
             self.sync_task = asyncio.create_task(
-                sync_with_drive_loop(self.google_drive_id, self.local_path, self.sync_interval)
+                asyncio.to_thread(
+                    sync_with_drive_loop(self.google_drive_id, self.local_path, self.sync_interval)
+                )
             )
                     
             while self._running:
                 self.maybe_refill_image_queue()
                 if self.image_queue:
                     next_image = self.image_queue.pop()
-                    self.display_image(next_image)
+                    print("display image")
+                    loop = asyncio.get_running_loop()
+                    print("aquired running loop")
+                    await loop.run_in_executor(self.executor, self.display_image, next_image)
+
                 await asyncio.sleep(self.display_interval)
         except asyncio.CancelledError:
             print("[Display] Render loop cancelled")
