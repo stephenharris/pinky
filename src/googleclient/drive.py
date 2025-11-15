@@ -4,7 +4,7 @@ from datetime import datetime
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
-from PIL import Image, ExifTags
+from PIL import Image, ExifTags, ImageOps
 from googleclient.client import authenticate
 from pathlib import Path
 import asyncio
@@ -83,5 +83,15 @@ def download_file(service, file_id, filepath):
             if status:
                 print(f"Downloading {filepath}: {int(status.progress() * 100)}%")
    
-    return filepath
+    return prepare_image(filepath)
 
+def prepare_image(img_path, size=(800, 480)):
+    # Open the image
+    image = Image.open(img_path)
+    # Remove EXIF-based rotation (normalize orientation)
+    image = ImageOps.exif_transpose(image)
+    # Center-crop and scale to the desired size, preserving aspect ratio
+    image = ImageOps.fit(image, size, method=Image.Resampling.LANCZOS, centering=(0.5, 0.5))
+
+    image.save(img_path)
+    return img_path

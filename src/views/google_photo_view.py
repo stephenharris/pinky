@@ -76,17 +76,6 @@ class GooglePhotoView:
         #resizedimage = image.resize((800, 480))        
         self.display.render(image)
 
-    def prepare_image(self, img_path, size=(800, 480)):
-        # Open the image
-        image = Image.open(img_path)
-
-        # Remove EXIF-based rotation (normalize orientation)
-        image = ImageOps.exif_transpose(image)
-
-        # Center-crop and scale to the desired size, preserving aspect ratio
-        image = ImageOps.fit(image, size, method=Image.Resampling.LANCZOS, centering=(0.5, 0.5))
-
-        return image
 
     def stop(self):
         """Call this to stop the render loop."""
