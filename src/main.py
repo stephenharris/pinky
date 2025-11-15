@@ -1,6 +1,7 @@
 import asyncio
 from display.mock import Mock
 from display_manager import DisplayManager
+from led_manager import LEDManager
 from util.config import Config
 
 async def main():
@@ -8,7 +9,9 @@ async def main():
     display = Mock(config)
 
     manager = DisplayManager(display, config)
+    led = LEDManager()
     
+    await led.blink_led()
     await manager.start();
     
     while True:
