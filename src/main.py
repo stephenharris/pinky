@@ -1,22 +1,31 @@
-import asyncio
+from time import sleep
 from display.mock import Mock
+from display.inky import Inky
 from display_manager import DisplayManager
 from led_manager import LEDManager
 from util.config import Config
 
-async def main():
+def main():
     config = Config()
-    display = Mock(config)
+    display = Mock(config) if config.get("mockDisplay") else Inky()
 
     manager = DisplayManager(display, config)
-    led = LEDManager()
     
-    asyncio.create_task(led.blink_led())
+    if not config.get("mockDisplay"):
+        led = LEDManager()
+        led.blink_led()
     
-    await manager.start();
+    manager.start();
     
-    while True:
-        await asyncio.sleep(1)
+    try:
+        while True:
+            sleep(0.5)
+
+    except KeyboardInterrupt:
+        print("Stopping…")
+        manager.stop()
+    
+
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

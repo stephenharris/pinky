@@ -1,26 +1,50 @@
-import asyncio
+import threading
 import hashlib
 from pathlib import Path
 import random
-from PIL import Image, ImageOps
+from PIL import Image
+from time import sleep
+from googleclient.client import authenticate
+from googleclient.drive import sync_drive_folder
+from googleapiclient.discovery import build
 
-from googleclient.drive import sync_with_drive_loop
-from concurrent.futures import ThreadPoolExecutor
 
 class GooglePhotoView:
     def __init__(self, display, config):
         self.display = display
         self.local_path = Path(config.get('photos', 'dir'))
-        self.image_queue = [] # queue of images to display
-        self.image_list_hash = None # hash of images directory
+        self.image_queue = []
+        self.image_list_hash = None
+
         self.display_interval = config.get('photos', 'display_interval')
         self.sync_interval = config.get('photos', 'sync_interval')
-        self.google_drive_id = config.get('photos', 'drive_folder_id');
-        self._running = False
-        self.executor = ThreadPoolExecutor(max_workers=2)
+        self.google_drive_id = config.get('photos', 'drive_folder_id')
+
+        self.running = threading.Event()
+        self.running.set()
+
+        self.display_thread = None
+        self.sync_thread = None
+
+    # -------------------------
+    # Image / queue utilities
+    # -------------------------
+
+    def list_local_files(self):
+        return [
+            p for p in self.local_path.glob("*")
+            if p.suffix.lower() in (".jpg", ".jpeg", ".png")
+        ]
+
+    def hash_images(self, files):
+        sorted_files = sorted(files)
+        m = hashlib.md5()
+        for f in sorted_files:
+            info = f"{f.name}-{f.stat().st_mtime}".encode()
+            m.update(info)
+        return m.hexdigest()
 
     def maybe_refill_image_queue(self):
-        """Shuffle all available images and refill the queue."""
         images = self.list_local_files()
         new_hash = self.hash_images(images)
 
@@ -28,58 +52,89 @@ class GooglePhotoView:
             self.image_list_hash = new_hash
             random.shuffle(images)
             self.image_queue = images.copy()
-            print(f"[Display] Changes in images detected. Refilled queue with {len(self.image_queue)} images.")
+            print(f"[Display] Changes detected. Refilled queue ({len(images)})")
 
-        elif not self.image_queue:        
+        elif not self.image_queue:
             random.shuffle(images)
             self.image_queue = images.copy()
-            print(f"[Display] Queue empty, reshuffled with {len(self.image_queue)} images.")
+            print(f"[Display] Queue empty, reshuffled ({len(images)})")
 
-    def list_local_files(self):
-        return [ p for p in self.local_path.glob("*") if p.suffix.lower() in (".jpg", ".jpeg", ".png")]
+    # -------------------------
+    # Display loop (thread)
+    # -------------------------
 
-    def hash_images(self, files):
-        sorted_files = sorted(files)
-        m = hashlib.md5()
-        for f in sorted_files:
-            # Use filename + last modification time
-            info = f"{f.name}-{f.stat().st_mtime}".encode()
-            m.update(info)
-        return m.hexdigest()
+    def display_loop(self):
+        """Runs in a thread."""
+        print("[Display] Thread started")
 
-
-    async def render(self):
-        self._running = True
-        try:
-            self.sync_task = asyncio.create_task(
-                asyncio.to_thread(
-                    sync_with_drive_loop(self.google_drive_id, self.local_path, self.sync_interval)
-                )
-            )
-                    
-            while self._running:
+        while self.running.is_set():
+            try:
                 self.maybe_refill_image_queue()
                 if self.image_queue:
-                    next_image = self.image_queue.pop()
-                    print("display image")
-                    loop = asyncio.get_running_loop()
-                    print("aquired running loop")
-                    await loop.run_in_executor(self.executor, self.display_image, next_image)
+                    img_path = self.image_queue.pop()
+                    print(f"[Display] Showing: {img_path}")
+                    self.display.render(Image.open(img_path))
+            except Exception as e:
+                print(f"[Display] ERROR: {e}")
 
-                await asyncio.sleep(self.display_interval)
-        except asyncio.CancelledError:
-            print("[Display] Render loop cancelled")
-            self.stop()
+            # interruptible sleep
+            for _ in range(int(self.display_interval * 10)):
+                if not self.running.is_set():
+                    return
+                sleep(0.1)
 
-    def display_image(self, img):
-        image = self.prepare_image(img)
-        #resizedimage = image.resize((800, 480))        
-        self.display.render(image)
+        print("[Display] Thread exiting")
 
+    # -------------------------
+    # Google Drive sync thread
+    # -------------------------
+
+    def sync_loop(self):
+        """Runs in a thread."""
+        print("[Sync] Thread started")
+
+        try:
+            creds = authenticate()
+            service = build('drive', 'v3', credentials=creds)
+
+            while self.running.is_set():
+                print(f"[Sync] Checking Google Drive folder {self.google_drive_id}")
+                sync_drive_folder(service, self.google_drive_id, self.local_path)
+                print("[Sync] Sync complete")
+
+                # interruptible sleep
+                for _ in range(self.sync_interval * 10):
+                    if not self.running.is_set():
+                        return
+                    sleep(0.1)
+
+        except Exception as e:
+            print(f"[Sync] ERROR: {e}")
+
+        print("[Sync] Thread exiting")
+
+    # -------------------------
+    # Control
+    # -------------------------
+
+    def render(self):
+        """Start both threads."""
+        self.running.set()
+
+        self.display_thread = threading.Thread(target=self.display_loop, daemon=True)
+        self.sync_thread = threading.Thread(target=self.sync_loop, daemon=True)
+
+        self.display_thread.start()
+        self.sync_thread.start()
 
     def stop(self):
-        """Call this to stop the render loop."""
-        self._running = False
-        # Optionally cancel sync task too
-        if hasattr(self, "sync_task"):
-            self.sync_task.cancel()
+        """Signal threads to exit and join them."""
+        print("[Manager] Stopping...")
+        self.running.clear()
+
+        if self.display_thread:
+            self.display_thread.join()
+        if self.sync_thread:
+            self.sync_thread.join()
+
+        print("[Manager] All threads stopped.")

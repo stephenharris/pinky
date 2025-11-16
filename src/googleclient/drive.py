@@ -1,26 +1,13 @@
 import os
 import io
 from datetime import datetime
+from time import sleep
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 from PIL import Image, ExifTags, ImageOps
 from googleclient.client import authenticate
 from pathlib import Path
-import asyncio
-
-async def sync_with_drive_loop(folder_id, local_path, sync_interval):
-    local_path = Path(local_path)
-
-    creds = authenticate()
-    service = build('drive', 'v3', credentials=creds)
-
-    while True:
-        print(f"[Sync] Checking for changes on Google Drive folder {folder_id}")
-        sync_drive_folder(service, folder_id, local_path)
-        print("[Sync] Sync complete.")
-        await asyncio.sleep(sync_interval)
-
 
 def sync_drive_folder(service, folder_id, local_path):
 

@@ -1,6 +1,8 @@
 import asyncio
 from datetime import datetime
 from pathlib import Path
+import threading
+from time import sleep
 from PIL import Image
 import imgkit
 from datetime import datetime
@@ -12,18 +14,29 @@ class AgendaView:
         self.display = display
         self.current_photo = 0
         self.config = config
-        self._running = True
+        self.running = threading.Event()
+        self.running.set()
 
-    async def render(self):
-        self._running = True
-        try:
-            while self._running:
-                self._render_agenda()
-                await asyncio.sleep(3600)
-        except asyncio.CancelledError:
-            print("[Display] Render loop cancelled")
-            self.stop()
+    def render(self):
+        """Start both threads."""
+        self.running.set()
 
+        self.display_thread = threading.Thread(target=self.display_loop, daemon=True)
+        self.display_thread.start()
+
+    def display_loop(self):
+        """Runs in a thread."""
+        print("[Display] Thread started")
+        while self.running.is_set():
+            self._render_agenda()
+            # interruptible sleep
+            for _ in range(int(3600 * 10)):
+                if not self.running.is_set():
+                    return
+                sleep(0.1)
+
+        print("[Display] Thread exiting")
+    
     def _render_agenda(self):
                 # --- Load events ---
         #with open("events.json") as f:
@@ -62,7 +75,14 @@ class AgendaView:
         self.display.render(img)
 
     def stop(self):
-        self._running = False
+        """Signal threads to exit and join them."""
+        print("[AgendaView] Stopping...")
+        self.running.clear()
+
+        if self.display_thread:
+            self.display_thread.join()
+
+        print("[AgendaView] All threads stopped.")
 
     # Sort timed events by start time if available
     def _parse_time(self, t):
