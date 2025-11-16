@@ -5,7 +5,7 @@ import gpiodevice
 from gpiod.line import Bias, Direction, Value
 
 class LEDManager:
-    def __init__(self, led):
+    def __init__(self):
         LED_PIN = 13  # adjust to your board's LED pin
 
         # Find the gpiochip device we need, we'll use

@@ -58,3 +58,29 @@ class ButtonManager:
         )
 
         self._thread = threading.Thread(target=self._loop_thread, daemon=True)
+    
+    def _loop_thread(self):
+        """Run in a background thread; blocks on read_edge_events()."""
+        print("[ButtonManager] Thread loop started")
+        while self._running:
+            try:
+                for event in self._request.read_edge_events():
+                    index = self.OFFSETS.index(event.line_offset)
+                    label = self.labels[index]
+                    print(f"[ButtonManager] Button {label} pressed")
+                    # Call the callback directly (thread-safe)
+                    self.callback(label)
+            except Exception as e:
+                print(f"[ButtonManager] Thread error: {e}")
+        print("[ButtonManager] Thread loop stopped")
+
+    def stop(self):
+        """Stop GPIO thread and release resources."""
+        print("[ButtonManager] Stopping...")
+        self._running = False
+        if self._request:
+            try:
+                self._request.release()
+            except Exception:
+                pass
+        print("[ButtonManager] Stopped.")
