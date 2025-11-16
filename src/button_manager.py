@@ -43,6 +43,7 @@ class ButtonManager:
     def start(self):
         """Start GPIO monitoring in a background thread."""
         self._running = True
+        print("[ButtonManager] Starting")
 
         INPUT = gpiod.LineSettings(
             direction=Direction.INPUT,
@@ -57,7 +58,8 @@ class ButtonManager:
             consumer="spectra6-buttons", config=line_config
         )
 
-        self._thread = threading.Thread(target=self._loop_thread, daemon=True)
+        self._thread = threading.Thread(target=self._loop_thread, daemon=True, name="Buttons")
+        self._thread.start()
     
     def _loop_thread(self):
         """Run in a background thread; blocks on read_edge_events()."""
