@@ -8,7 +8,6 @@ from util.config import Config
 def main():
     config = Config()
     display = Mock(config) if config.get("mockDisplay") else Inky()
-
     manager = DisplayManager(display, config)
     
     if not config.get("mockDisplay"):

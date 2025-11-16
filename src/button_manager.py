@@ -29,7 +29,7 @@ class ButtonManager:
         """
         button_ids: list of BCM GPIO numbers (e.g., [5, 6, 16, 24])
         labels: same-length list of labels (e.g., ["A", "B", "C", "D"])
-        callback: function(label: str) -> None (called in asyncio loop)
+        callback: function(label: str) -> None
         """
         self.button_ids = BUTTONS
         self.labels = LABELS

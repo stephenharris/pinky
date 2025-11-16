@@ -1,5 +1,5 @@
-import asyncio
 from datetime import datetime
+import os
 from pathlib import Path
 import threading
 from time import sleep
@@ -38,6 +38,8 @@ class AgendaView:
         print("[Display] Thread exiting")
     
     def _render_agenda(self):
+
+        os.makedirs(self.config.get('tmp_dir'), exist_ok=True)
                 # --- Load events ---
         #with open("events.json") as f:
         #    events = json.load(f)
