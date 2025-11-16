@@ -35,8 +35,10 @@ class DisplayManager:
 
     def handle_button(self, label: str):
         print(f"[DisplayManager] Button pressed: {label}")
-        if label == "A":
+        if label == "D":
             self.cycle_view()
+        else:
+            self.views[self.current_view].handle_button(label)
 
     def cycle_view(self):
         modes = list(DisplayMode)

@@ -85,6 +85,15 @@ class GooglePhotoView:
 
         print("[Display] Thread exiting")
 
+    def handle_button_press(self, label):
+        """Start both threads."""
+        if label == "A":
+            self.maybe_refill_image_queue()
+            if self.image_queue:
+                img_path = self.image_queue.pop()
+                print(f"[Display] Showing: {img_path}")
+                self.display.render(Image.open(img_path))
+
     # -------------------------
     # Google Drive sync thread
     # -------------------------

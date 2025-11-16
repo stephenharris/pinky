@@ -22,5 +22,9 @@ class HelloWorldView:
 
         self.display.render(image)
 
+    def handle_button_press(self, label):
+        """Start both threads."""
+        pass
+
     def stop(self):
         pass

@@ -16,5 +16,9 @@ class PhotoView:
         resizedimage = image.resize((800, 480))        
         self.display.render(resizedimage)
 
+    def handle_button_press(self, label):
+        """Start both threads."""
+        pass
+
     def stop(self):
         pass

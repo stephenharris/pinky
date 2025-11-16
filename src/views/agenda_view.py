@@ -24,6 +24,11 @@ class AgendaView:
         self.display_thread = threading.Thread(target=self.display_loop, daemon=True)
         self.display_thread.start()
 
+
+    def handle_button_press(self):
+        """Start both threads."""
+        self._render_agenda()
+
     def display_loop(self):
         """Runs in a thread."""
         print("[Display] Thread started")
