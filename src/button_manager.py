@@ -1,3 +1,4 @@
+from datetime import time
 import threading
 import gpiod
 import gpiodevice
@@ -21,6 +22,8 @@ SW_C = 16  # Set this value to '25' if you're using a Impression 13.3"
 SW_D = 24
 BUTTONS = [SW_A, SW_B, SW_C, SW_D]
 LABELS = ["A", "B", "C", "D"]
+
+DEBOUNCE_MS = 150
 
 class ButtonManager:
     """Handles GPIO button input in a background thread and calls a handler."""
@@ -64,11 +67,23 @@ class ButtonManager:
     def _loop_thread(self):
         """Run in a background thread; blocks on read_edge_events()."""
         print("[ButtonManager] Thread loop started")
+
+        last_time = {label: 0 for label in self.labels}
+
         while self._running:
             try:
                 for event in self._request.read_edge_events():
                     index = self.OFFSETS.index(event.line_offset)
                     label = self.labels[index]
+
+                    now = time.monotonic() * 1000
+                    if now - last_time[label] < DEBOUNCE_MS:
+                        print(f"debounce {label}")
+                        # Too soon → ignore as bounce
+                        continue
+
+                    last_time[label] = now
+
                     print(f"[ButtonManager] Button {label} pressed")
                     # Call the callback directly (thread-safe)
                     self.callback(label)
