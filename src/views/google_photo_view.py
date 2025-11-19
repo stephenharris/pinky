@@ -23,6 +23,8 @@ class GooglePhotoView:
         self.running = threading.Event()
         self.running.set()
 
+        self.force_next_event = threading.Event()
+
         self.display_thread = None
         self.sync_thread = None
 
@@ -79,6 +81,13 @@ class GooglePhotoView:
 
             # interruptible sleep
             for _ in range(int(self.display_interval * 10)):
+
+                # if event triggered, break immediately
+                if self.force_next_event.wait(timeout=0.1):
+                    print("[Photos] Forced next image")
+                    self.force_next_event.clear()
+                    break
+
                 if not self.running.is_set():
                     return
                 sleep(0.1)
@@ -86,13 +95,15 @@ class GooglePhotoView:
         print("[Display] Thread exiting")
 
     def handle_button_press(self, label):
-        """Start both threads."""
+        """Responds to button A click by cycling through image."""
+
         if label == "A":
-            self.maybe_refill_image_queue()
-            if self.image_queue:
-                img_path = self.image_queue.pop()
-                print(f"[Display] Showing: {img_path}")
-                self.display.render(Image.open(img_path))
+            if self.rendering:
+                print("[Photos] Busy — ignoring button press")
+                return
+    
+            print("[Photos] Forcing next image")
+            self.force_next_event.set()
 
     # -------------------------
     # Google Drive sync thread
