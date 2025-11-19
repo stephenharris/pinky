@@ -20,6 +20,6 @@ class Inky:
         self.led.on()
         self.inky_display.set_image(image)
         self.inky_display.show()
-        self.led,off()
+        self.led.off()
 
 
