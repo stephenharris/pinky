@@ -20,10 +20,10 @@ class LEDManager:
         self._stop_event = Event()
         self._thread = None
 
-    def on(self, interval=0.5):
+    def on(self):
         self.gpio.set_value(self.led, Value.ACTIVE)
 
-    def off(self, interval=0.5):
+    def off(self):
         self.gpio.set_value(self.led, Value.INACTIVE)
 
     def blink_led(self, interval=0.5):

@@ -1,4 +1,6 @@
-from inky.auto import auto       # library from Pimoroni for Inky
+from inky.auto import auto
+
+from led_manager import LEDManager       # library from Pimoroni for Inky
 
 class Inky:
     def __init__(self):
@@ -11,8 +13,13 @@ class Inky:
         self.RED = self.inky_display.RED
         self.YELLOW = self.inky_display.YELLOW
 
+        self.led = LEDManager()
+        self.led.on()
+
     def render(self, image):
+        self.led.on()
         self.inky_display.set_image(image)
         self.inky_display.show()
+        self.led,off()
 
 
