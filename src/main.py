@@ -12,9 +12,12 @@ def main():
     
     if not config.get("mockDisplay"):
         led = LEDManager()
-        led.blink_led()
+        led.on()
     
     manager.start();
+
+    if not config.get("mockDisplay"):
+        led.off()
     
     try:
         while True:

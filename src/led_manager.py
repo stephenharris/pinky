@@ -20,6 +20,12 @@ class LEDManager:
         self._stop_event = Event()
         self._thread = None
 
+    def on(self, interval=0.5):
+        self.gpio.set_value(self.led, Value.ACTIVE)
+
+    def off(self, interval=0.5):
+        self.gpio.set_value(self.led, Value.ACTIVE)
+
     def blink_led(self, interval=0.5):
         self._stop_event.clear()
         self._thread = Thread(target=self._blink_loop, args=(interval,), name="LEDBlink")
