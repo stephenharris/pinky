@@ -98,9 +98,9 @@ class GooglePhotoView:
         """Responds to button A click by cycling through image."""
 
         if label == "A":
-            if self.rendering:
-                print("[Photos] Busy — ignoring button press")
-                return
+            #if self.rendering:
+            #    print("[Photos] Busy — ignoring button press")
+            #    return
     
             print("[Photos] Forcing next image")
             self.force_next_event.set()
