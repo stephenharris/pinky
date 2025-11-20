@@ -42,7 +42,6 @@ class DisplayManager:
         print(f"[DisplayManager] Started with view: {self.current_view}")
         self.views[self.current_view].render()
 
-
     def handle_button(self, label: str):
         print(f"[DisplayManager] Button pressed: {label}")
         if label == "D":
@@ -51,9 +50,11 @@ class DisplayManager:
             self.views[self.current_view].handle_button_press(label)
 
     def cycle_view(self):
-        idx = self.views.index(self.current_view)
-        new_mode = self.views[(idx + 1) % len(self.views)]
-        self.set_view(new_mode.value)
+        view_keys = list(self.views.keys())
+        index = view_keys.index(self.current_view)
+        new_index = (index + 1) % len(view_keys)
+        new_key = view_keys[new_index]
+        self.set_view(new_key)
 
     def set_view(self, view: str):
         self.views[self.current_view].stop()
