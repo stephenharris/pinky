@@ -1,6 +1,9 @@
 {
     "tmp_dir": "/tmp/pinky",
-    "display": "agenda",
+    "views": [
+        "agenda",
+        "photos"
+    ],
     "calendar": {
         "google_calendar_id": "..."
     },
