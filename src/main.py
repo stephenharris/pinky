@@ -1,3 +1,5 @@
+import sys
+import logging
 from time import sleep
 from display.mock import Mock
 from display.inky import Inky
@@ -16,10 +18,17 @@ def main():
             sleep(0.5)
 
     except KeyboardInterrupt:
-        print("Stopping…")
+        logging.info("Stopping…")
         manager.stop()
     
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        handlers=[logging.StreamHandler(sys.stdout)],
+        format="%(asctime)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+         force=True
+    )
     main()

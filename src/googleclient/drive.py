@@ -1,3 +1,4 @@
+import logging
 import os
 import io
 from datetime import datetime
@@ -19,11 +20,11 @@ def sync_drive_folder(service, folder_id, local_path):
     # --- Delete any local files missing from Drive ---    
     for name, path in local_files.items():
         if name not in remote_files:
-            print(f"[Sync] Deleting local file no longer in Drive: {name}")
+            logging.info(f"[Sync] Deleting local file no longer in Drive: {name}")
             try:
                 path.unlink()
             except Exception as e:
-                print(f"[Sync] Failed to delete {name}: {e}")
+                logging.info(f"[Sync] Failed to delete {name}: {e}")
 
     # --- Download new or missing files ---
     for name, info in remote_files.items():
@@ -31,7 +32,7 @@ def sync_drive_folder(service, folder_id, local_path):
         if dest.exists():
             continue  # skip existing files for simplicity; could compare size/time
         
-        print(f"[Sync] Downloading new file: {dest}")
+        logging.info(f"[Sync] Downloading new file: {dest}")
         download_file(service, file_id=info['id'], filepath=dest)
        
 
@@ -68,7 +69,7 @@ def download_file(service, file_id, filepath):
         while not done:
             status, done = downloader.next_chunk()
             if status:
-                print(f"Downloading {filepath}: {int(status.progress() * 100)}%")
+                logging.info(f"Downloading {filepath}: {int(status.progress() * 100)}%")
    
     return prepare_image(filepath)
 

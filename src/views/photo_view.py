@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
@@ -7,11 +8,11 @@ class PhotoView:
         self.current_photo = 0
 
     def render(self):
-        print(__file__)
-        print((Path(__file__).parents[2]))
+        logging.info(__file__)
+        logging.info((Path(__file__).parents[2]))
         image_path = Path(__file__).parents[2] / "imgs" / "shipping-picture-inky7.jpg"
 
-        print(image_path)
+        logging.info(image_path)
         image = Image.open(image_path)
         resizedimage = image.resize((800, 480))        
         self.display.render(resizedimage)

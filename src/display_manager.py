@@ -1,4 +1,5 @@
 from enum import Enum
+import logging
 
 from button_manager import ButtonManager
 from mock_button_manager import MockButtonManager
@@ -39,11 +40,11 @@ class DisplayManager:
         self._running = True
         self.buttons.start()
 
-        print(f"[DisplayManager] Started with view: {self.current_view}")
+        logging.info(f"[DisplayManager] Started with view: {self.current_view}")
         self.views[self.current_view].render()
 
     def handle_button(self, label: str):
-        print(f"[DisplayManager] Button pressed: {label}")
+        logging.info(f"[DisplayManager] Button pressed: {label}")
         if label == "D":
             self.cycle_view()
         else:
@@ -62,8 +63,8 @@ class DisplayManager:
         self.views[self.current_view].render()
 
     def stop(self):
-        print("[DisplayManager] Stopping...")
+        logging.info("[DisplayManager] Stopping...")
         self._running = False
         self.buttons.stop()
         self.views[self.current_view].stop()
-        print("[DisplayManager] Stopped.")
+        logging.info("[DisplayManager] Stopped.")

@@ -1,4 +1,5 @@
 from datetime import date
+import logging
 import os
 from pathlib import Path
 import threading
@@ -25,7 +26,7 @@ class XmasCountdownView:
 
     def display_loop(self):
         """Runs in a thread."""
-        print("[Display] Thread started")
+        logging.info("[Display] Thread started")
         while self.running.is_set():
             self._render_agenda()
             # interruptible sleep
@@ -34,7 +35,7 @@ class XmasCountdownView:
                     return
                 sleep(0.1)
 
-        print("[Display] Thread exiting")
+        logging.info("[Display] Thread exiting")
 
     def days_until_christmas(self):
         today = date.today()
@@ -52,11 +53,11 @@ class XmasCountdownView:
         os.makedirs(self.config.get('tmp_dir'), exist_ok=True)
 
         if self.days_remaining == self.days_until_christmas():
-            print("[christmas] remaining days unchanged")
+            logging.info("[christmas] remaining days unchanged")
             return
         
         self.days_remaining = self.days_until_christmas();
-        print(f"[christmas] remaining days {self.days_remaining}")
+        logging.info(f"[christmas] remaining days {self.days_remaining}")
 
         env = Environment(loader=FileSystemLoader("templates"))
         template = env.get_template("xmas-countdown.html")
@@ -82,12 +83,12 @@ class XmasCountdownView:
 
     def stop(self):
         """Signal threads to exit and join them."""
-        print("[AgendaView] Stopping...")
+        logging.info("[AgendaView] Stopping...")
         self.running.clear()
 
         if self.display_thread:
             self.display_thread.join()
 
-        print("[AgendaView] All threads stopped.")
+        logging.info("[AgendaView] All threads stopped.")
 
 

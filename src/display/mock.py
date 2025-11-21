@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 import os
 
 class Mock:
@@ -20,7 +21,7 @@ class Mock:
         filepath = os.path.join(self.output_dir, f"display_{timestamp}.png")
         image.save(filepath, "PNG")
         image.save(os.path.join(self.output_dir, "latest.png"), "PNG")
-        print(f"[MockDisplay] Saved image to {filepath}")
+        logging.info(f"[MockDisplay] Saved image to {filepath}")
 
 
 

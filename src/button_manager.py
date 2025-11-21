@@ -1,4 +1,5 @@
 import time
+import logging
 import threading
 import gpiod
 import gpiodevice
@@ -46,7 +47,7 @@ class ButtonManager:
     def start(self):
         """Start GPIO monitoring in a background thread."""
         self._running = True
-        print("[ButtonManager] Starting")
+        logging.info("[ButtonManager] Starting")
 
         INPUT = gpiod.LineSettings(
             direction=Direction.INPUT,
@@ -66,7 +67,7 @@ class ButtonManager:
     
     def _loop_thread(self):
         """Run in a background thread; blocks on read_edge_events()."""
-        print("[ButtonManager] Thread loop started")
+        logging.info("[ButtonManager] Thread loop started")
 
         last_time = {label: 0 for label in self.labels}
 
@@ -78,26 +79,26 @@ class ButtonManager:
 
                     now = time.monotonic() * 1000
                     if now - last_time[label] < DEBOUNCE_MS:
-                        print(f"debounce {label}")
+                        logging.info(f"debounce {label}")
                         # Too soon → ignore as bounce
                         continue
 
                     last_time[label] = now
 
-                    print(f"[ButtonManager] Button {label} pressed")
+                    logging.info(f"[ButtonManager] Button {label} pressed")
                     # Call the callback directly (thread-safe)
                     self.callback(label)
             except Exception as e:
-                print(f"[ButtonManager] Thread error: {e}")
-        print("[ButtonManager] Thread loop stopped")
+                logging.info(f"[ButtonManager] Thread error: {e}")
+        logging.info("[ButtonManager] Thread loop stopped")
 
     def stop(self):
         """Stop GPIO thread and release resources."""
-        print("[ButtonManager] Stopping...")
+        logging.info("[ButtonManager] Stopping...")
         self._running = False
         if self._request:
             try:
                 self._request.release()
             except Exception:
                 pass
-        print("[ButtonManager] Stopped.")
+        logging.info("[ButtonManager] Stopped.")

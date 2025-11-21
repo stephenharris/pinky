@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 import os
 from pathlib import Path
 import threading
@@ -31,7 +32,7 @@ class AgendaView:
 
     def display_loop(self):
         """Runs in a thread."""
-        print("[Display] Thread started")
+        logging.info("[Display] Thread started")
         while self.running.is_set():
             self._render_agenda()
             # interruptible sleep
@@ -40,7 +41,7 @@ class AgendaView:
                     return
                 sleep(0.1)
 
-        print("[Display] Thread exiting")
+        logging.info("[Display] Thread exiting")
     
     def _render_agenda(self):
 
@@ -83,13 +84,13 @@ class AgendaView:
 
     def stop(self):
         """Signal threads to exit and join them."""
-        print("[AgendaView] Stopping...")
+        logging.info("[AgendaView] Stopping...")
         self.running.clear()
 
         if self.display_thread:
             self.display_thread.join()
 
-        print("[AgendaView] All threads stopped.")
+        logging.info("[AgendaView] All threads stopped.")
 
     # Sort timed events by start time if available
     def _parse_time(self, t):

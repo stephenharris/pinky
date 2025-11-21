@@ -1,3 +1,4 @@
+import logging
 from threading import Thread, Event
 from time import sleep
 import gpiod
@@ -42,4 +43,4 @@ class LEDManager:
         self._stop_event.set()
         if self._thread:
             self._thread.join()
-        print("[LEDManager] Stopped.")
+        logging.info("[LEDManager] Stopped.")

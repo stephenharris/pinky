@@ -1,3 +1,4 @@
+import logging
 import os
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.oauth2.credentials import Credentials
@@ -28,6 +29,6 @@ def authenticate():
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
         
-        print("Saved credentials to token.json")
+        logging.info("Saved credentials to token.json")
 
     return creds

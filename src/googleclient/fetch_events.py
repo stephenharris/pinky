@@ -1,5 +1,6 @@
 from __future__ import print_function
 import datetime
+import logging
 from googleapiclient.discovery import build
 from googleclient.client import authenticate
 from dateutil import parser
@@ -53,6 +54,6 @@ def fetch_events(calendar_id):
             "color": color
         })
 
-    print(f"Found {len(output)} events")
+    logging.info(f"Found {len(output)} events")
     return output
 

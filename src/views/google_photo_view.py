@@ -7,8 +7,10 @@ from time import sleep
 from googleclient.client import authenticate
 from googleclient.drive import sync_drive_folder
 from googleapiclient.discovery import build
+import logging
 
 
+logging.info("Your log message here")
 class GooglePhotoView:
     def __init__(self, display, config):
         self.display = display
@@ -54,12 +56,12 @@ class GooglePhotoView:
             self.image_list_hash = new_hash
             random.shuffle(images)
             self.image_queue = images.copy()
-            print(f"[Display] Changes detected. Refilled queue ({len(images)})")
+            logging.info(f"[Display] Changes detected. Refilled queue ({len(images)})")
 
         elif not self.image_queue:
             random.shuffle(images)
             self.image_queue = images.copy()
-            print(f"[Display] Queue empty, reshuffled ({len(images)})")
+            logging.info(f"[Display] Queue empty, reshuffled ({len(images)})")
 
     # -------------------------
     # Display loop (thread)
@@ -67,24 +69,25 @@ class GooglePhotoView:
 
     def display_loop(self):
         """Runs in a thread."""
-        print("[Display] Thread started")
+        logging.info("[Display] Thread started")
 
         while self.running.is_set():
+            logging.info("[Display] Running...")
             try:
                 self.maybe_refill_image_queue()
                 if self.image_queue:
                     img_path = self.image_queue.pop()
-                    print(f"[Display] Showing: {img_path}")
+                    logging.info(f"[Display] Showing: {img_path}")
                     self.display.render(Image.open(img_path))
             except Exception as e:
-                print(f"[Display] ERROR: {e}")
+                logging.info(f"[Display] ERROR: {e}")
 
             # interruptible sleep
             for _ in range(int(self.display_interval * 10)):
 
                 # if event triggered, break immediately
                 if self.force_next_event.wait(timeout=0.1):
-                    print("[Photos] Forced next image")
+                    logging.info("[Photos] Forced next image")
                     self.force_next_event.clear()
                     break
 
@@ -92,17 +95,17 @@ class GooglePhotoView:
                     return
                 sleep(0.1)
 
-        print("[Display] Thread exiting")
+        logging.info("[Display] Thread exiting")
 
     def handle_button_press(self, label):
         """Responds to button A click by cycling through image."""
 
         if label == "A":
             #if self.rendering:
-            #    print("[Photos] Busy — ignoring button press")
+            #    logging.info("[Photos] Busy — ignoring button press")
             #    return
     
-            print("[Photos] Forcing next image")
+            logging.info("[Photos] Forcing next image")
             self.force_next_event.set()
 
     # -------------------------
@@ -111,16 +114,16 @@ class GooglePhotoView:
 
     def sync_loop(self):
         """Runs in a thread."""
-        print("[Sync] Thread started")
+        logging.info("[Sync] Thread started")
 
         try:
             creds = authenticate()
             service = build('drive', 'v3', credentials=creds)
 
             while self.running.is_set():
-                print(f"[Sync] Checking Google Drive folder {self.google_drive_id}")
+                logging.info(f"[Sync] Checking Google Drive folder {self.google_drive_id}")
                 sync_drive_folder(service, self.google_drive_id, self.local_path)
-                print("[Sync] Sync complete")
+                logging.info("[Sync] Sync complete")
 
                 # interruptible sleep
                 for _ in range(self.sync_interval * 10):
@@ -129,9 +132,9 @@ class GooglePhotoView:
                     sleep(0.1)
 
         except Exception as e:
-            print(f"[Sync] ERROR: {e}")
+            logging.info(f"[Sync] ERROR: {e}")
 
-        print("[Sync] Thread exiting")
+        logging.info("[Sync] Thread exiting")
 
     # -------------------------
     # Control
@@ -149,7 +152,7 @@ class GooglePhotoView:
 
     def stop(self):
         """Signal threads to exit and join them."""
-        print("[Manager] Stopping...")
+        logging.info("[Manager] Stopping...")
         self.running.clear()
 
         if self.display_thread:
@@ -157,4 +160,4 @@ class GooglePhotoView:
         if self.sync_thread:
             self.sync_thread.join()
 
-        print("[Manager] All threads stopped.")
+        logging.info("[Manager] All threads stopped.")
