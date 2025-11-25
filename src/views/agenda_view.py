@@ -9,6 +9,7 @@ import imgkit
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
 from googleclient.fetch_events import fetch_events
+import hashlib
 
 class AgendaView:
     def __init__(self, display, config):
@@ -17,6 +18,7 @@ class AgendaView:
         self.config = config
         self.running = threading.Event()
         self.running.set()
+        self._render_hash = None
 
     def render(self):
         """Start both threads."""
@@ -65,11 +67,18 @@ class AgendaView:
         events = all_day_events + timed_events
         html = template.render(date=today_str, events=events)
 
-        
+        new_render_hash = hashlib.md5(html)
+
+        if new_render_hash == self._render_hash:
+            logging.info("[AgendaView] No change in rendered page. Skipping display update.")
+            return
+
+        self._render_hash = new_render_hash
+
         # --- Write rendered HTML (for debugging) ---
         with open("agenda_rendered.html", "w") as f:
             f.write(html)
-        
+
         # --- Render HTML to PNG ---
         imgkit.from_file(
             "agenda_rendered.html",
