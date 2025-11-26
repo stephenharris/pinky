@@ -9,8 +9,6 @@ from googleclient.drive import sync_drive_folder
 from googleapiclient.discovery import build
 import logging
 
-
-logging.info("Your log message here")
 class GooglePhotoView:
     def __init__(self, display, config):
         self.display = display
