@@ -31,4 +31,5 @@ if __name__ == "__main__":
         datefmt="%Y-%m-%d %H:%M:%S",
          force=True
     )
+    logging.info("starting...")
     main()
