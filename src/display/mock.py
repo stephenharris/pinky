@@ -12,10 +12,10 @@ class Mock:
 
         self.output_dir = config.get('tmp_dir')
         
-    def light_on(self):
+    def led_on(self):
         logging.info(f"[MockDisplay] LED on")
 
-    def light_off(self):
+    def led_off(self):
         logging.info(f"[MockDisplay] LED off")
 
     def render(self, image):

@@ -16,10 +16,10 @@ class Inky:
         self.led = LEDManager()
         self.led.on()
 
-    def light_on(self):
+    def led_on(self):
         self.led.on()
 
-    def light_off(self):
+    def led_off(self):
         self.led.off()
 
     def render(self, image):
