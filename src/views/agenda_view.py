@@ -67,8 +67,7 @@ class AgendaView:
         events = all_day_events + timed_events
         html = template.render(date=today_str, events=events)
 
-        new_render_hash = hashlib.md5(html)
-
+        new_render_hash = hashlib.md5(html.encode("utf-8")).hexdigest()
         if new_render_hash == self._render_hash:
             logging.info("[AgendaView] No change in rendered page. Skipping display update.")
             return
