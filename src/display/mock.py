@@ -12,6 +12,11 @@ class Mock:
 
         self.output_dir = config.get('tmp_dir')
         
+    def light_on(self):
+        logging.info(f"[MockDisplay] LED on")
+
+    def light_off(self):
+        logging.info(f"[MockDisplay] LED off")
 
     def render(self, image):
         os.makedirs(self.output_dir, exist_ok=True)

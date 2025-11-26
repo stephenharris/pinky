@@ -16,6 +16,12 @@ class Inky:
         self.led = LEDManager()
         self.led.on()
 
+    def light_on(self):
+        self.led.on()
+
+    def light_off(self):
+        self.led.off()
+
     def render(self, image):
         self.led.on()
         self.inky_display.set_image(image)

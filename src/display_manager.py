@@ -58,6 +58,7 @@ class DisplayManager:
         self.set_view(new_key)
 
     def set_view(self, view: str):
+        self.display.led_on()
         self.views[self.current_view].stop()
         self.current_view = view
         self.views[self.current_view].render()
