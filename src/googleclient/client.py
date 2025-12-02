@@ -20,11 +20,13 @@ def authenticate():
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
         creds_json = creds.to_json()
         logging.info(f"Using credentials from token.json, expires {creds.expiry}")
+        logging.info(f"Using credentials from token.json {creds.to_json()}")
     
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
             logging.info(f"Refreshed credentials, expires {creds.expiry}")
+            logging.info(f"Refreshed credentials: {creds.to_json()}")
         else:
             if not creds:
                 logging.info(f"Token: {creds.to_json()}")
