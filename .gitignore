@@ -1,5 +1,6 @@
-credentials.json
-token.json
+credentials*.json
+service*.json
+token*.json
 config.json
 .venv
 

@@ -9,6 +9,13 @@ def fetch_events(calendar_id):
     creds = authenticate()
     service = build('calendar', 'v3', credentials=creds)
 
+    try:
+        service.calendarList().insert(body={"id": calendar_id}).execute()
+        logging.info(f"Calendar {calendar_id} added")
+    except Exception as e:
+        logging.error(f"Inserting calendar failed: {e}")
+
+
     # Get events for today
     now = datetime.datetime.utcnow()
     start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)

@@ -3,17 +3,23 @@ import os
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
+from google.oauth2 import service_account
 
 # Define the OAuth 2.0 scopes
 SCOPES = [
-    'https://www.googleapis.com/auth/photoslibrary.readonly',
-    'https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata',
     'https://www.googleapis.com/auth/drive.readonly',
-    'https://www.googleapis.com/auth/calendar.readonly'
+    "https://www.googleapis.com/auth/calendar"
 ]
 
-# Authenticate and build the service
+
 def authenticate():
+    creds = service_account.Credentials.from_service_account_file(
+        "service.json", scopes=SCOPES
+    )
+    return creds
+
+# Authenticate and build the service
+def authenticate_oauth():
     creds = None
 
     if os.path.exists('token.json'):
