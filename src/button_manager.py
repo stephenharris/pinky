@@ -24,7 +24,7 @@ SW_D = 24
 BUTTONS = [SW_A, SW_B, SW_C, SW_D]
 LABELS = ["A", "B", "C", "D"]
 
-DEBOUNCE_MS = 150
+DEBOUNCE_MS = 300
 
 class ButtonManager:
     """Handles GPIO button input in a background thread and calls a handler."""
