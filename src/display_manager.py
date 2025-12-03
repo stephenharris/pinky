@@ -58,6 +58,11 @@ class DisplayManager:
         self.set_view(new_key)
 
     def set_view(self, view: str):
+        if self.display.is_busy():
+            logging.info("[DisplayManager] Display busy, not changing view...")
+            return
+
+        logging.info(f"[DisplayManager] Changing view from {self.current_view} to {view} ...")
         self.display.led_on()
         self.views[self.current_view].stop()
         self.current_view = view

@@ -12,6 +12,9 @@ class Mock:
 
         self.output_dir = config.get('tmp_dir')
         
+    def is_busy(self):
+        return False
+
     def led_on(self):
         logging.info(f"[MockDisplay] LED on")
 

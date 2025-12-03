@@ -21,6 +21,9 @@ class LEDManager:
         self._stop_event = Event()
         self._thread = None
 
+    def is_on(self):
+        return Value.ACTIVE == self.gpio.get_value(self.led)
+
     def on(self):
         self.gpio.set_value(self.led, Value.ACTIVE)
 

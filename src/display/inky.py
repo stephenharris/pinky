@@ -16,6 +16,9 @@ class Inky:
         self.led = LEDManager()
         self.led.on()
 
+    def is_busy(self):
+        return self.led.is_on()
+
     def led_on(self):
         self.led.on()
 
