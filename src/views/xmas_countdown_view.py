@@ -83,12 +83,12 @@ class XmasCountdownView:
 
     def stop(self):
         """Signal threads to exit and join them."""
-        logging.info("[AgendaView] Stopping...")
+        logging.info("[XMasCountdown] Stopping...")
         self.running.clear()
 
         if self.display_thread:
             self.display_thread.join()
 
-        logging.info("[AgendaView] All threads stopped.")
+        logging.info("[XMasCountdown] All threads stopped.")
 
 
